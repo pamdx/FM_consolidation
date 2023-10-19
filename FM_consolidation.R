@@ -2,14 +2,14 @@
 
 library(tidyverse)
 
-source("parameters_consolidation.R")
+source("./parameters/parameters_FM_consolidation.R")
 
 # Import original data and duplicate to insert imputed data
 
-original <- readRDS(paste0(path_emputator_inputs, "FM_DB.rds")) %>%
+data_pre_imputation <- readRDS(paste0(path_emputator_inputs, "FM_DB.rds")) %>%
   add_column(timestamp = as.POSIXct(NA))
 
-final <- original
+data_consolidated <- data_pre_imputation
 
 # Import imputed data
 
@@ -24,19 +24,28 @@ for(i in filenames){
   
   if (country %in% country_change_name) {country <- gsub("-", "/", country)} # fix country names for those with characters not allowed in file names
   
-  # Replace imputed data in original data
-  
-  final <- final %>% 
-    filter(!(geographic_area == country & OC2 == sector & between(year, year_min, year_max))) %>%
-    rbind(imputed)
+  if (single_questionnaire) {
+    
+    if (country %in% unique(data_pre_imputation$geographic_area)) {
+      
+      data_consolidated <- data_consolidated %>% 
+        filter(!(geographic_area == country & OC2 == sector & between(year, year_min, year_max))) %>%
+        rbind(imputed)
+      
+    } 
+    
+  } else {
+    
+    # Replace imputed data in original data
+    data_consolidated <- data_consolidated %>% 
+      filter(!(geographic_area == country & OC2 == sector & between(year, year_min, year_max))) %>%
+      rbind(imputed) 
+    
+  }
   
 }
 
-final <- final %>%
+data_consolidated <- data_consolidated %>%
   arrange(geographic_area, OC2, year, OC3, working_time, sex)
 
-if (export_as_csv) {
- 
-  write_csv(final, paste0("FM_DB_imputed_", year_min, "-", year_max, ".csv"), na = "")
-   
-}
+write_csv(data_consolidated, paste0("FM_DB_imputed_", year_min, "-", year_max, ".csv"), na = "")
