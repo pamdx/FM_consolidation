@@ -2,8 +2,6 @@
 
 library(tidyverse)
 
-gorzreé
-
 source("./parameters/parameters_FM_consolidation.R")
 
 # Import original data and duplicate to insert imputed data
