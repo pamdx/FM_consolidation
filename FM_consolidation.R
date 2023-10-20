@@ -48,4 +48,8 @@ for(i in filenames){
 data_consolidated <- data_consolidated %>%
   arrange(geographic_area, OC2, year, OC3, working_time, sex)
 
-write_csv(data_consolidated, paste0("FM_DB_imputed_", year_min, "-", year_max, ".csv"), na = "")
+if (single_questionnaire) {
+  
+  write_csv(data_consolidated, paste0("FM_DB_imputed_consolidated", year_min, "-", year_max, ".csv"), na = "")
+
+}
