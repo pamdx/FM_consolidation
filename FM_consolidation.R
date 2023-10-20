@@ -50,6 +50,6 @@ data_consolidated <- data_consolidated %>%
 
 if (single_questionnaire) {
   
-  write_csv(data_consolidated, paste0("FM_DB_imputed_consolidated", year_min, "-", year_max, ".csv"), na = "")
+  write_csv(data_consolidated, paste0("FM_DB_imputed_consolidated_", year_min, "-", year_max, ".csv"), na = "")
 
 }
